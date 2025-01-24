@@ -1,5 +1,9 @@
-<!DOCTYPE html><html><head><meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
-    <title>LOVE YAYANK</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOVE YAYANK ❤️</title>
     <style>
         body {
             margin: 0;
@@ -9,11 +13,12 @@
             align-items: center;
             background: linear-gradient(-45deg, #ff6b6b, #ff8e8e, #ff6b98, #ff4081);
             background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-            font-family: Arial, sans-serif;
+            animation: gradientBG 10s ease infinite;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
             overflow: hidden;
+            user-select: none;
         }
-        
+
         .container {
             position: relative;
             width: 100%;
@@ -25,21 +30,29 @@
             left: 50%;
             top: 50%;
             transform: translate(-50%, -50%);
-            font-size: 3.5rem;
+            font-size: 4rem;
             color: white;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            animation: pulse 1.5s infinite;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+            animation: pulse 2s infinite;
             text-align: center;
             z-index: 10;
-            white-space: nowrap;
+        }
+
+        .message span {
+            display: inline-block;
+            animation: spin 2s linear infinite;
+        }
+
+        .message span:nth-child(odd) {
+            animation-direction: reverse;
         }
 
         .heart {
             position: absolute;
-            font-size: 1.5rem;
-            user-select: none;
-            animation: float 6s ease-in-out infinite;
+            animation: fly 5s ease-in-out infinite, spin 5s linear infinite;
             z-index: 1;
+            color: white;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
         }
 
         @keyframes gradientBG {
@@ -47,41 +60,35 @@
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
-        
+
         @keyframes pulse {
             0% { transform: translate(-50%, -50%) scale(1); }
             50% { transform: translate(-50%, -50%) scale(1.1); }
             100% { transform: translate(-50%, -50%) scale(1); }
         }
-        
-        @keyframes float {
-            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+
+        @keyframes spin {
+            0% { transform: rotate(0); }
+            100% { transform: rotate(360deg); }
         }
 
-        .come-here {
-            font-size: 2rem;
-            margin-top: 20px;
-            animation: shake 0.5s infinite;
-            color: #fff;
-        }
-
-        @keyframes shake {
-            0% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            50% { transform: translateX(5px); }
-            75% { transform: translateX(-5px); }
-            100% { transform: translateX(0); }
+        @keyframes fly {
+            0% {
+                transform: translate(0, 0) scale(0.5);
+                opacity: 1;
+            }
+            50% {
+                transform: translate(calc(50vw - 50%), calc(-30vh)) scale(1.2);
+            }
+            100% {
+                transform: translate(calc(-50vw + 50%), calc(-100vh)) scale(0.8);
+                opacity: 0;
+            }
         }
 
         @media (max-width: 600px) {
             .message {
-                font-size: 2rem;
-                white-space: normal;
-                padding: 0 20px;
-            }
-            .come-here {
-                font-size: 1.5rem;
+                font-size: 2.5rem;
             }
         }
     </style>
@@ -89,52 +96,44 @@
 <body>
     <div class="container">
         <div class="message">
-            LOVEE YAYANK
-            <div class="come-here">COME HERE FASTT!! ❤️</div>
+            <span>❤️</span> LOVE YAYANK <span>❤️</span>
         </div>
     </div>
 
     <script>
-        function createHeart() {
+        function createFlyingHeart(x, y) {
             const heart = document.createElement('div');
             heart.className = 'heart';
             heart.innerHTML = '❤️';
-            heart.style.left = Math.random() * 100 + 'vw';
-            heart.style.animationDuration = (Math.random() * 3 + 3) + 's';
-            heart.style.opacity = Math.random();
-            heart.style.fontSize = (Math.random() * 30 + 10) + 'px';
-            
-            document.querySelector('.container').appendChild(heart);
+            heart.style.left = `${x}px`;
+            heart.style.top = `${y}px`;
+            heart.style.fontSize = `${Math.random() * 40 + 20}px`;
+            heart.style.animationDuration = `${Math.random() * 3 + 3}s`;
 
-            setTimeout(() => {
-                heart.remove();
-            }, 6000);
+            document.body.appendChild(heart);
+
+            setTimeout(() => heart.remove(), 5000);
         }
 
-        setInterval(createHeart, 300);
-
-        // Create initial hearts
-        for(let i = 0; i < 10; i++) {
-            setTimeout(createHeart, 100 * i);
-        }
-
-        // Add sparkle effect on click
-        document.addEventListener('click', (e) => {
-            for(let i = 0; i < 5; i++) {
-                const heart = document.createElement('div');
-                heart.className = 'heart';
-                heart.innerHTML = '❤️';
-                heart.style.left = e.pageX + 'px';
-                heart.style.top = e.pageY + 'px';
-                heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
-                document.querySelector('.container').appendChild(heart);
-                
-                setTimeout(() => {
-                    heart.remove();
-                }, 6000);
+        function spewHearts(x, y) {
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => createFlyingHeart(x + Math.random() * 100 - 50, y + Math.random() * 100 - 50), i * 50);
             }
+        }
+
+        function createRandomHeart() {
+            const x = Math.random() * window.innerWidth;
+            const y = Math.random() * window.innerHeight;
+            createFlyingHeart(x, y);
+        }
+
+        // Spew hearts on click
+        window.addEventListener('click', (e) => {
+            spewHearts(e.clientX, e.clientY);
         });
+
+        // Generate random hearts periodically
+        setInterval(createRandomHeart, 500);
     </script>
-
-
-</body></html>
+</body>
+</html>

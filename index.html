@@ -1,139 +1,142 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LOVE YAYANK ❤️</title>
-    <style>
-        body {
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: linear-gradient(-45deg, #ff6b6b, #ff8e8e, #ff6b98, #ff4081);
-            background-size: 400% 400%;
-            animation: gradientBG 10s ease infinite;
-            font-family: 'Comic Sans MS', cursive, sans-serif;
-            overflow: hidden;
-            user-select: none;
-        }
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Cloud, Server, Database, Globe, GitBranch, Box, RefreshCw, Globe2 } from 'lucide-react';
 
-        .container {
-            position: relative;
-            width: 100%;
-            height: 100vh;
-        }
+export default function ArchitectureDashboard() {
+    const [metrics, setMetrics] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-        .message {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 4rem;
-            color: white;
-            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
-            animation: pulse 2s infinite;
-            text-align: center;
-            z-index: 10;
-        }
-
-        .message span {
-            display: inline-block;
-            animation: spin 2s linear infinite;
-        }
-
-        .message span:nth-child(odd) {
-            animation-direction: reverse;
-        }
-
-        .heart {
-            position: absolute;
-            animation: fly 5s ease-in-out infinite, spin 5s linear infinite;
-            z-index: 1;
-            color: white;
-            text-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
-        }
-
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        @keyframes pulse {
-            0% { transform: translate(-50%, -50%) scale(1); }
-            50% { transform: translate(-50%, -50%) scale(1.1); }
-            100% { transform: translate(-50%, -50%) scale(1); }
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0); }
-            100% { transform: rotate(360deg); }
-        }
-
-        @keyframes fly {
-            0% {
-                transform: translate(0, 0) scale(0.5);
-                opacity: 1;
+    useEffect(() => {
+        // Simulate fetching metrics
+        const generateMetrics = () => {
+            const data = [];
+            for (let i = 0; i < 24; i++) {
+                data.push({
+                    time: `${i}:00`,
+                    requests: Math.floor(Math.random() * 1000),
+                    latency: Math.random() * 100,
+                    errors: Math.random() * 10
+                });
             }
-            50% {
-                transform: translate(calc(50vw - 50%), calc(-30vh)) scale(1.2);
-            }
-            100% {
-                transform: translate(calc(-50vw + 50%), calc(-100vh)) scale(0.8);
-                opacity: 0;
-            }
-        }
+            setMetrics(data);
+            setIsLoading(false);
+        };
+        generateMetrics();
+        const interval = setInterval(generateMetrics, 5000);
+        return () => clearInterval(interval);
+    }, []);
 
-        @media (max-width: 600px) {
-            .message {
-                font-size: 2.5rem;
-            }
+    const architectureComponents = [
+        {
+            title: "AWS Infrastructure",
+            items: [
+                { icon: Globe2, text: "Route 53 Custom Domain" },
+                { icon: Cloud, text: "CloudFront CDN" },
+                { icon: Box, text: "S3 Static Hosting" }
+            ]
+        },
+        {
+            title: "CI/CD Pipeline",
+            items: [
+                { icon: GitBranch, text: "GitHub Actions" },
+                { icon: RefreshCw, text: "Automated Deployments" }
+            ]
+        },
+        {
+            title: "Backend Services",
+            items: [
+                { icon: Server, text: "Lambda Functions" },
+                { icon: Database, text: "DynamoDB" },
+                { icon: Globe, text: "API Gateway" }
+            ]
         }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="message">
-            <span>❤️</span> where bibub? <span>❤️</span>
+    ];
+
+    return (
+        <div className="min-h-screen bg-gray-50 p-8">
+            <div className="max-w-7xl mx-auto">
+                {/* Header */}
+                <motion.div 
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-center mb-12"
+                >
+                    <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                        Modern Cloud Architecture
+                    </h1>
+                    <p className="text-xl text-gray-600">
+                        Vite + React + Tailwind SPA with AWS Serverless Backend
+                    </p>
+                </motion.div>
+
+                {/* Architecture Components */}
+                <div className="grid md:grid-cols-3 gap-8 mb-12">
+                    {architectureComponents.map((section, idx) => (
+                        <motion.div
+                            key={section.title}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: idx * 0.2 }}
+                            className="bg-white rounded-lg shadow-lg p-6"
+                        >
+                            <h2 className="text-2xl font-semibold mb-4 text-gray-800">
+                                {section.title}
+                            </h2>
+                            <div className="space-y-4">
+                                {section.items.map((item, index) => (
+                                    <motion.div
+                                        key={index}
+                                        className="flex items-center space-x-3 text-gray-700"
+                                        whileHover={{ scale: 1.05 }}
+                                    >
+                                        <item.icon className="w-6 h-6 text-blue-500" />
+                                        <span>{item.text}</span>
+                                    </motion.div>
+                                ))}
+                            </div>
+                        </motion.div>
+                    ))}
+                </div>
+
+                {/* Metrics Dashboard */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-white rounded-lg shadow-lg p-6"
+                >
+                    <h2 className="text-2xl font-semibold mb-6 text-gray-800">
+                        Live Performance Metrics
+                    </h2>
+                    {isLoading ? (
+                        <div className="h-96 flex items-center justify-center">
+                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500" />
+                        </div>
+                    ) : (
+                        <div className="h-96">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={metrics}>
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis dataKey="time" />
+                                    <YAxis />
+                                    <Tooltip />
+                                    <Legend />
+                                    <Line type="monotone" dataKey="requests" stroke="#2563eb" name="Requests" />
+                                    <Line type="monotone" dataKey="latency" stroke="#059669" name="Latency (ms)" />
+                                    <Line type="monotone" dataKey="errors" stroke="#dc2626" name="Errors" />
+                                </LineChart>
+                            </ResponsiveContainer>
+                        </div>
+                    )}
+                </motion.div>
+
+                {/* Footer */}
+                <div className="text-center mt-12 text-gray-600">
+                    <p>Powered by AWS Cloud Infrastructure</p>
+                </div>
+            </div>
         </div>
-    </div>
+    );
+}
 
-    <script>
-        function createFlyingHeart(x, y) {
-            const heart = document.createElement('div');
-            heart.className = 'heart';
-            heart.innerHTML = '❤️';
-            heart.style.left = `${x}px`;
-            heart.style.top = `${y}px`;
-            heart.style.fontSize = `${Math.random() * 40 + 20}px`;
-            heart.style.animationDuration = `${Math.random() * 3 + 3}s`;
-
-            document.body.appendChild(heart);
-
-            setTimeout(() => heart.remove(), 5000);
-        }
-
-        function spewHearts(x, y) {
-            for (let i = 0; i < 15; i++) {
-                setTimeout(() => createFlyingHeart(x + Math.random() * 100 - 50, y + Math.random() * 100 - 50), i * 50);
-            }
-        }
-
-        function createRandomHeart() {
-            const x = Math.random() * window.innerWidth;
-            const y = Math.random() * window.innerHeight;
-            createFlyingHeart(x, y);
-        }
-
-        // Spew hearts on click
-        window.addEventListener('click', (e) => {
-            spewHearts(e.clientX, e.clientY);
-        });
-
-        // Generate random hearts periodically
-        setInterval(createRandomHeart, 500);
-    </script>
-</body>
-</html>
+i want to turn this into a display

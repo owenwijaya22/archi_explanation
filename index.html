@@ -1,142 +1,358 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Cloud, Server, Database, Globe, GitBranch, Box, RefreshCw, Globe2 } from 'lucide-react';
-
-export default function ArchitectureDashboard() {
-    const [metrics, setMetrics] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        // Simulate fetching metrics
-        const generateMetrics = () => {
-            const data = [];
-            for (let i = 0; i < 24; i++) {
-                data.push({
-                    time: `${i}:00`,
-                    requests: Math.floor(Math.random() * 1000),
-                    latency: Math.random() * 100,
-                    errors: Math.random() * 10
-                });
-            }
-            setMetrics(data);
-            setIsLoading(false);
-        };
-        generateMetrics();
-        const interval = setInterval(generateMetrics, 5000);
-        return () => clearInterval(interval);
-    }, []);
-
-    const architectureComponents = [
-        {
-            title: "AWS Infrastructure",
-            items: [
-                { icon: Globe2, text: "Route 53 Custom Domain" },
-                { icon: Cloud, text: "CloudFront CDN" },
-                { icon: Box, text: "S3 Static Hosting" }
-            ]
-        },
-        {
-            title: "CI/CD Pipeline",
-            items: [
-                { icon: GitBranch, text: "GitHub Actions" },
-                { icon: RefreshCw, text: "Automated Deployments" }
-            ]
-        },
-        {
-            title: "Backend Services",
-            items: [
-                { icon: Server, text: "Lambda Functions" },
-                { icon: Database, text: "DynamoDB" },
-                { icon: Globe, text: "API Gateway" }
-            ]
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 2rem;
         }
-    ];
 
-    return (
-        <div className="min-h-screen bg-gray-50 p-8">
-            <div className="max-w-7xl mx-auto">
-                {/* Header */}
-                <motion.div 
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-center mb-12"
-                >
-                    <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                        Modern Cloud Architecture
-                    </h1>
-                    <p className="text-xl text-gray-600">
-                        Vite + React + Tailwind SPA with AWS Serverless Backend
-                    </p>
-                </motion.div>
+        .architecture-diagram {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
 
-                {/* Architecture Components */}
-                <div className="grid md:grid-cols-3 gap-8 mb-12">
-                    {architectureComponents.map((section, idx) => (
-                        <motion.div
-                            key={section.title}
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: idx * 0.2 }}
-                            className="bg-white rounded-lg shadow-lg p-6"
-                        >
-                            <h2 className="text-2xl font-semibold mb-4 text-gray-800">
-                                {section.title}
-                            </h2>
-                            <div className="space-y-4">
-                                {section.items.map((item, index) => (
-                                    <motion.div
-                                        key={index}
-                                        className="flex items-center space-x-3 text-gray-700"
-                                        whileHover={{ scale: 1.05 }}
-                                    >
-                                        <item.icon className="w-6 h-6 text-blue-500" />
-                                        <span>{item.text}</span>
-                                    </motion.div>
-                                ))}
-                            </div>
-                        </motion.div>
-                    ))}
+        .title {
+            text-align: center;
+            color: #60a5fa;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+            text-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
+        }
+
+        .layer {
+            margin: 0.75rem 0;
+            padding: 1.25rem;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 12px;
+            border: 1px solid rgba(96, 165, 250, 0.2);
+            backdrop-filter: blur(8px);
+            transition: all 0.3s ease;
+        }
+
+        .layer:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(96, 165, 250, 0.2);
+            border-color: rgba(96, 165, 250, 0.4);
+        }
+
+        .layer-title {
+            font-weight: bold;
+            color: #60a5fa;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .layer-description {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-bottom: 1rem;
+            line-height: 1.4;
+        }
+
+        .layer-content {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .service {
+            background: rgba(59, 130, 246, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            min-width: 140px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(96, 165, 250, 0.2);
+        }
+
+        .service:hover {
+            background: rgba(59, 130, 246, 0.2);
+            transform: scale(1.05);
+            border-color: rgba(96, 165, 250, 0.4);
+        }
+
+        .service-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #60a5fa;
+        }
+
+        .arrow {
+            text-align: center;
+            color: #60a5fa;
+            font-size: 1.25rem;
+            margin: 0.25rem 0;
+        }
+
+        .pipeline-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 8px;
+            margin-top: 1rem;
+            overflow-x: auto;
+        }
+
+        .pipeline-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+        }
+
+        .pipeline-arrow {
+            color: #60a5fa;
+            margin: 0 1rem;
+        }
+
+        .metrics-container {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 12px;
+            border: 1px solid rgba(96, 165, 250, 0.2);
+        }
+
+        .metrics-title {
+            font-weight: bold;
+            color: #60a5fa;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        .tech-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin: 0.25rem;
+            border: 1px solid rgba(96, 165, 250, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .layer-content {
+                flex-direction: column;
+            }
+            
+            .service {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="architecture-diagram">
+        <h1 class="title">Modern Cloud Architecture</h1>
+
+        <!-- DNS & CDN Layer -->
+        <div class="layer">
+            <div class="layer-title">🌐 DNS & Content Delivery</div>
+            <div class="layer-description">
+                Custom domain routing and global content delivery network for optimal performance
+            </div>
+            <div class="layer-content">
+                <div class="service">
+                    <div class="service-icon">🔄</div>
+                    <div>Route 53</div>
+                    <div class="tech-badge">DNS Routing</div>
                 </div>
-
-                {/* Metrics Dashboard */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="bg-white rounded-lg shadow-lg p-6"
-                >
-                    <h2 className="text-2xl font-semibold mb-6 text-gray-800">
-                        Live Performance Metrics
-                    </h2>
-                    {isLoading ? (
-                        <div className="h-96 flex items-center justify-center">
-                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500" />
-                        </div>
-                    ) : (
-                        <div className="h-96">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <LineChart data={metrics}>
-                                    <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="time" />
-                                    <YAxis />
-                                    <Tooltip />
-                                    <Legend />
-                                    <Line type="monotone" dataKey="requests" stroke="#2563eb" name="Requests" />
-                                    <Line type="monotone" dataKey="latency" stroke="#059669" name="Latency (ms)" />
-                                    <Line type="monotone" dataKey="errors" stroke="#dc2626" name="Errors" />
-                                </LineChart>
-                            </ResponsiveContainer>
-                        </div>
-                    )}
-                </motion.div>
-
-                {/* Footer */}
-                <div className="text-center mt-12 text-gray-600">
-                    <p>Powered by AWS Cloud Infrastructure</p>
+                <div class="service">
+                    <div class="service-icon">⚡</div>
+                    <div>CloudFront</div>
+                    <div class="tech-badge">Global CDN</div>
                 </div>
             </div>
         </div>
-    );
-}
 
-i want to turn this into a display
+        <div class="arrow">↓</div>
+
+        <!-- Frontend Layer -->
+        <div class="layer">
+            <div class="layer-title">🎨 Frontend Application</div>
+            <div class="layer-description">
+                Modern single-page application built with cutting-edge technologies
+            </div>
+            <div class="layer-content">
+                <div class="service">
+                    <div class="service-icon">📦</div>
+                    <div>S3 Bucket</div>
+                    <div class="tech-badge">Vite</div>
+                    <div class="tech-badge">React</div>
+                    <div class="tech-badge">Tailwind</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="arrow">↓</div>
+
+        <!-- Backend Layer -->
+        <div class="layer">
+            <div class="layer-title">⚙️ Serverless Backend</div>
+            <div class="layer-description">
+                Fully serverless architecture with automatic scaling and pay-per-use pricing
+            </div>
+            <div class="layer-content">
+                <div class="service">
+                    <div class="service-icon">🔐</div>
+                    <div>API Gateway</div>
+                    <div class="tech-badge">REST API</div>
+                </div>
+                <div class="service">
+                    <div class="service-icon">λ</div>
+                    <div>Lambda</div>
+                    <div class="tech-badge">Serverless</div>
+                </div>
+                <div class="service">
+                    <div class="service-icon">💾</div>
+                    <div>DynamoDB</div>
+                    <div class="tech-badge">NoSQL</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CI/CD Pipeline -->
+        <div class="layer">
+            <div class="layer-title">🚀 CI/CD Pipeline</div>
+            <div class="layer-description">
+                Automated deployment pipeline with zero-downtime updates
+            </div>
+            <div class="pipeline-flow">
+                <div class="pipeline-step">
+                    <div class="service-icon">📝</div>
+                    <div>Code Push</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">
+                    <div class="service-icon">⚙️</div>
+                    <div>Build</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">
+                    <div class="service-icon">🗑️</div>
+                    <div>Clear S3</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">
+                    <div class="service-icon">📤</div>
+                    <div>Upload</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">
+                    <div class="service-icon">🔄</div>
+                    <div>Invalidate CDN</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Metrics -->
+        <div class="metrics-container">
+            <div class="metrics-title">Live Performance Metrics</div>
+            <canvas id="metricsChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        // Initialize metrics chart with modern styling
+        const ctx = document.getElementById('metricsChart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [
+                    {
+                        label: 'Requests',
+                        borderColor: '#60a5fa',
+                        backgroundColor: 'rgba(96, 165, 250, 0.1)',
+                        data: [],
+                        fill: true,
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Latency (ms)',
+                        borderColor: '#34d399',
+                        backgroundColor: 'rgba(52, 211, 153, 0.1)',
+                        data: [],
+                        fill: true,
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Errors',
+                        borderColor: '#f87171',
+                        backgroundColor: 'rgba(248, 113, 113, 0.1)',
+                        data: [],
+                        fill: true,
+                        tension: 0.4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                animation: {
+                    duration: 1000
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(96, 165, 250, 0.1)'
+                        },
+                        ticks: {
+                            color: '#94a3b8'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(96, 165, 250, 0.1)'
+                        },
+                        ticks: {
+                            color: '#94a3b8'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#94a3b8'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Update metrics every 5 seconds
+        function updateMetrics() {
+            const now = new Date();
+            const timeLabel = now.toLocaleTimeString();
+            
+            chart.data.labels.push(timeLabel);
+            chart.data.datasets[0].data.push(Math.floor(Math.random() * 1000));
+            chart.data.datasets[1].data.push(Math.random() * 100);
+            chart.data.datasets[2].data.push(Math.random() * 10);
+
+            if (chart.data.labels.length > 24) {
+                chart.data.labels.shift();
+                chart.data.datasets.forEach(dataset => dataset.data.shift());
+            }
+
+            chart.update();
+        }
+
+        updateMetrics();
+        setInterval(updateMetrics, 5000);
+    </script>
+</body>
+</html>
